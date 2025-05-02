@@ -1,0 +1,113 @@
+// 此代碼需要複製到Google Apps Script中
+// 1. 打開 Google Sheets，創建一個新的工作表
+// 2. 點擊 擴充功能 > Apps Script
+// 3. 刪除預設代碼，複製以下代碼
+// 4. 保存並部署為網頁應用程序
+// 5. 將獲得的URL複製到前端的 GOOGLE_SHEET_WEBHOOK_URL 變量中
+
+function doGet(e) {
+  return HtmlService.createHtmlOutput("STAR報告生成器API正在運行");
+}
+
+function doPost(e) {
+  try {
+    // 獲取請求內容
+    var data = JSON.parse(e.postData.contents);
+    
+    // 打開活動試算表
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("STAR報告記錄") || ss.insertSheet("STAR報告記錄");
+    
+    // 如果是新建的表，則創建表頭
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        "時間戳記", 
+        "處理時間(秒)", 
+        "商店類別",
+        "情境(輸入)", 
+        "任務(輸入)", 
+        "行動(輸入)", 
+        "結果(輸入)",
+        "情境(輸出)", 
+        "任務(輸出)", 
+        "行動(輸出)", 
+        "結果(輸出)"
+      ]);
+      
+      // 凍結第一行
+      sheet.setFrozenRows(1);
+      
+      // 設置列寬
+      sheet.setColumnWidth(1, 180); // 時間戳記
+      sheet.setColumnWidth(2, 120); // 處理時間
+      
+      // 設置表頭顏色
+      sheet.getRange(1, 1, 1, 11).setBackground("#4285F4").setFontColor("#FFFFFF").setFontWeight("bold");
+    }
+    
+    // 將資料寫入試算表
+    sheet.appendRow([
+      data.timestamp, 
+      data.processingTime,
+      data.storeCategory,
+      data.inputData.situation, 
+      data.inputData.task, 
+      data.inputData.action, 
+      data.inputData.result,
+      data.outputData.situation, 
+      data.outputData.task, 
+      data.outputData.action, 
+      data.outputData.result
+    ]);
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      'success': true, 
+      'message': '資料已成功記錄'
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      'success': false, 
+      'message': '發生錯誤: ' + error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// 如果需要定期清理舊資料，可以添加以下排程函數
+function setupTrigger() {
+  // 建立每月觸發器，以清理超過3個月的記錄
+  ScriptApp.newTrigger('cleanupOldRecords')
+    .timeBased()
+    .onMonthDay(1)
+    .atHour(1)
+    .create();
+}
+
+function cleanupOldRecords() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("STAR報告記錄");
+  
+  if (!sheet || sheet.getLastRow() <= 1) return;
+  
+  var data = sheet.getDataRange().getValues();
+  var threeMonthsAgo = new Date();
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  
+  var newData = [data[0]]; // 保留表頭
+  
+  // 過濾出3個月內的記錄
+  for (var i = 1; i < data.length; i++) {
+    var recordDate = new Date(data[i][0]);
+    if (recordDate >= threeMonthsAgo) {
+      newData.push(data[i]);
+    }
+  }
+  
+  // 清空表格並重新寫入過濾後的資料
+  sheet.clear();
+  sheet.getRange(1, 1, newData.length, newData[0].length).setValues(newData);
+  
+  // 恢復表頭樣式
+  sheet.getRange(1, 1, 1, 11).setBackground("#4285F4").setFontColor("#FFFFFF").setFontWeight("bold");
+  sheet.setFrozenRows(1);
+}

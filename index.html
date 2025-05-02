@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STAR報告生成器</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>STAR報告生成器</h1>
+      <p class="subtitle">AI自動優化報告</p>
+    </header>
+
+    <!-- 商店類別選擇 -->
+    <div class="section category">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-store"></i>
+        </div>
+        <div>
+          <h2 class="section-title">商店類別</h2>
+          <p class="section-subtitle">選擇您工作的商店類別，以獲得更符合工作情境的報告</p>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="store-category">選擇商店類別：<span class="required">*</span></label>
+        <select id="store-category" class="store-select">
+          <option value="保養">保養</option>
+          <option value="彩妝">彩妝</option>
+          <option value="香水香氛" selected>香水香氛</option>
+          <option value="女仕精品">女仕精品</option>
+          <option value="男仕精品">男仕精品</option>
+          <option value="數位家電">數位家電</option>
+          <option value="玩具">玩具</option>
+          <option value="居家生活">居家生活</option>
+          <option value="伴手禮">伴手禮</option>
+          <option value="菸酒">菸酒</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 情境部分 -->
+    <div class="section situation">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-map-marked-alt"></i>
+        </div>
+        <div>
+          <h2 class="section-title">情境 (Situation)</h2>
+          <p class="section-subtitle">描述你所面臨的特定情境或挑戰，提供背景、時間和地點等關鍵細節</p>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="situation">輸入情境描述（最多300字）：<span class="required">*</span></label>
+        <textarea id="situation" placeholder="例如：在2023年第二季度，我們銷售團隊面臨了競爭對手推出新產品導致市場份額下滑18%的挑戰..."></textarea>
+        <div class="counter"><span id="situation-count">0</span>/300</div>
+      </div>
+
+      <div class="output-header">
+        <div class="output-title">AI優化後的情境：</div>
+        <button class="copy-btn" data-target="situation-output">
+          <i class="far fa-copy"></i> 複製
+        </button>
+      </div>
+      <div id="situation-output" class="output empty">AI將在這裡生成優化後的情境描述...</div>
+      <div class="counter output-counter"><span id="situation-output-count">0</span>/300</div>
+    </div>
+
+    <!-- 任務部分 -->
+    <div class="section task">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-tasks"></i>
+        </div>
+        <div>
+          <h2 class="section-title">任務 (Task)</h2>
+          <p class="section-subtitle">說明你在這個情境中需要完成的具體任務或目標，以及你的責任範圍</p>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="task">輸入任務描述（最多300字）：<span class="required">*</span></label>
+        <textarea id="task" placeholder="例如：我被指派負責分析市場份額下滑的主要原因，並制定一個挽回客戶和提升銷售的策略..."></textarea>
+        <div class="counter"><span id="task-count">0</span>/300</div>
+      </div>
+
+      <div class="output-header">
+        <div class="output-title">AI優化後的任務：</div>
+        <button class="copy-btn" data-target="task-output">
+          <i class="far fa-copy"></i> 複製
+        </button>
+      </div>
+      <div id="task-output" class="output empty">AI將在這裡生成優化後的任務描述...</div>
+      <div class="counter output-counter"><span id="task-output-count">0</span>/300</div>
+    </div>
+
+    <!-- 行動部分 -->
+    <div class="section action">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <div>
+          <h2 class="section-title">行動 (Action)</h2>
+          <p class="section-subtitle">詳細說明你採取的具體行動、步驟和方法來解決問題或完成任務</p>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="action">輸入行動描述（最多300字）：<span class="required">*</span></label>
+        <textarea id="action" placeholder="例如：我首先進行了全面的競爭對手分析，並訪談了15位流失客戶以了解他們轉向競爭對手的原因..."></textarea>
+        <div class="counter"><span id="action-count">0</span>/300</div>
+      </div>
+
+      <div class="output-header">
+        <div class="output-title">AI優化後的行動：</div>
+        <button class="copy-btn" data-target="action-output">
+          <i class="far fa-copy"></i> 複製
+        </button>
+      </div>
+      <div id="action-output" class="output empty">AI將在這裡生成優化後的行動描述...</div>
+      <div class="counter output-counter"><span id="action-output-count">0</span>/300</div>
+    </div>
+
+    <!-- 結果部分 -->
+    <div class="section result">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div>
+          <h2 class="section-title">結果 (Result)</h2>
+          <p class="section-subtitle">描述你的行動所帶來的具體成果、影響和收穫，最好能用數據或事實來支持</p>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="result">輸入結果描述（最多300字）：<span class="required">*</span></label>
+        <textarea id="result" placeholder="例如：通過我制定的新策略，我們在三個月內贏回了60%的流失客戶，市場份額增加了12%，銷售額相較上季度提升了25%..."></textarea>
+        <div class="counter"><span id="result-count">0</span>/300</div>
+      </div>
+
+      <div class="output-header">
+        <div class="output-title">AI優化後的結果：</div>
+        <button class="copy-btn" data-target="result-output">
+          <i class="far fa-copy"></i> 複製
+        </button>
+      </div>
+      <div id="result-output" class="output empty">AI將在這裡生成優化後的結果描述...</div>
+      <div class="counter output-counter"><span id="result-output-count">0</span>/300</div>
+    </div>
+
+    <div class="status">
+      <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <span>正在生成STAR報告，請稍候...</span>
+      </div>
+      <div id="error" class="error">處理請求時發生錯誤，請稍後再試</div>
+      <div id="success" class="success">報告生成成功！您可以複製各部分內容或導出完整報告</div>
+    </div>
+
+    <div class="token-usage-container">
+      <div id="tokenUsage" class="token-usage">Token 使用量: 0/1000000</div>
+    </div>
+
+    <div class="controls">
+      <button id="generate" class="btn btn-primary">
+        <i class="fas fa-magic"></i> 生成STAR報告
+      </button>
+      <button id="clear" class="btn btn-secondary">
+        <i class="fas fa-eraser"></i> 清除所有
+      </button>
+    </div>
+
+    <footer>
+      <p>STAR報告生成器 | AI自動優化報告</p>
+    </footer>
+  </div>
+  <script src="load-env.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
