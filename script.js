@@ -258,46 +258,46 @@ async function callWorker(userInput) {
   updateTokenUsageDisplay();
 
   const storeCategory = document.getElementById("store-category").value;
-  const workerUrl = getEnv('CLOUDFLARE_WORKER_URL', '');
+  
+  try {
+    const res = await fetch('/api/openai', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: getEnv('OPENAI_MODEL', 'gpt-4.1'),
+        messages: [
+          {
+            role: "system",
+            content:
+              `你是一位擅長撰寫 STAR 工作報告的顧問，協助機場免稅店${storeCategory}部門員工用自然、真實、有條理的方式撰寫工作回顧，語言使用中文，風格清楚、具體，不要過於誇大，適合上交給主管評核。每個部分回覆的字數必須在100-150字之間，回覆內容不需要說明"我是${storeCategory}員工等自我介紹"。請根據使用者提供的內容生成完整報告。請在回覆中為每個部分添加標記，使用[S]標記情境部分開始，[T]標記任務部分開始，[A]標記行動部分開始，[R]標記結果部分開始。例如：'[S]近期部門業績下滑...'`,
+          },
+          {
+            role: "user",
+            content: userInput,
+          },
+        ],
+      }),
+    });
 
-  if (!workerUrl) {
-    throw new Error('未設置 Cloudflare Worker URL');
+    if (!res.ok) {
+      throw new Error(`API請求失敗: ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    // 捕獲並更新token使用情況
+    if (data.usage) {
+      tokenUsage.prompt = data.usage.prompt_tokens || 0;
+      tokenUsage.completion = data.usage.completion_tokens || 0;
+      tokenUsage.used = data.usage.total_tokens || 0;
+      updateTokenUsageDisplay();
+    }
+
+    return data.choices?.[0]?.message?.content || "無法生成回應";
+  } catch (error) {
+    console.error("API 呼叫錯誤:", error);
+    throw error;
   }
-
-  const res = await fetch(workerUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: getEnv('OPENAI_MODEL', 'gpt-4.1'),
-      messages: [
-        {
-          role: "system",
-          content:
-            `你是一位擅長撰寫 STAR 工作報告的顧問，協助機場免稅店${storeCategory}部門員工用自然、真實、有條理的方式撰寫工作回顧，語言使用中文，風格清楚、具體，不要過於誇大，適合上交給主管評核。每個部分回覆的字數必須在100-150字之間，回覆內容不需要說明"我是${storeCategory}員工等自我介紹"。請根據使用者提供的內容生成完整報告。請在回覆中為每個部分添加標記，使用[S]標記情境部分開始，[T]標記任務部分開始，[A]標記行動部分開始，[R]標記結果部分開始。例如：'[S]近期部門業績下滑...'`,
-        },
-        {
-          role: "user",
-          content: userInput,
-        },
-      ],
-    }),
-  });
-
-  if (!res.ok) {
-    throw new Error(`API請求失敗: ${res.status}`);
-  }
-
-  const data = await res.json();
-
-  // 捕獲並更新token使用情況
-  if (data.usage) {
-    tokenUsage.prompt = data.usage.prompt_tokens || 0;
-    tokenUsage.completion = data.usage.completion_tokens || 0;
-    tokenUsage.used = data.usage.total_tokens || 0;
-    updateTokenUsageDisplay();
-  }
-
-  return data.choices?.[0]?.message?.content || "無法生成回應";
 }
 
 // 重新整理頁面前的確認功能

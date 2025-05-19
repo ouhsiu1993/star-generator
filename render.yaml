@@ -1,0 +1,18 @@
+services:
+  # Web Service 設定
+  - type: web
+    name: star-report-generator
+    env: node
+    region: singapore  # 選擇鄰近台灣的地區
+    plan: free  # Render 免費方案
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false  # 要手動在 Render Dashboard 設定
+      - key: OPENAI_MODEL
+        value: gpt-4.1
+      - key: TOKEN_LIMIT
+        value: 1000000
+      - key: GOOGLE_SHEET_WEBHOOK_URL
+        sync: false  # 要手動在 Render Dashboard 設定
