@@ -260,6 +260,9 @@ async function callWorker(userInput) {
   const storeCategory = document.getElementById("store-category").value;
   
   try {
+    console.log("開始呼叫 API...");
+    
+    // 直接使用相對路徑，不再依賴環境變數
     const res = await fetch('/api/openai', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -279,11 +282,16 @@ async function callWorker(userInput) {
       }),
     });
 
+    console.log("API 響應狀態:", res.status);
+
     if (!res.ok) {
+      const errorText = await res.text();
+      console.error("API 錯誤響應:", errorText);
       throw new Error(`API請求失敗: ${res.status}`);
     }
 
     const data = await res.json();
+    console.log("API 響應成功");
 
     // 捕獲並更新token使用情況
     if (data.usage) {
